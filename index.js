@@ -65,4 +65,8 @@ app.post("/jobs", upload.single('image'), async(req, res)=>{
     }
 });
 
+app.get("/heartbeat", (req, res) => {
+    res.status(200);
+});
+
 app.listen(PORT, () => { console.log(`PORT: ${PORT}`) });

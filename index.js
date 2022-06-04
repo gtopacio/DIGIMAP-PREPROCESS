@@ -3,11 +3,11 @@ const app = express();
 const multer  = require('multer');
 const cors = require('cors');
 const fs = require('fs');
-const sharp = require('sharp');
 
-const { db } = require('./utils/firebase');
+const firebaseJob = require('./utils/firebaseJob');
 const uploadFile = require('./utils/upload');
-const { resolve } = require('path');
+const convertToJpg = require('./utils/convertToJpg');
+const submitToSQS = require('./utils/submitToSQS');
 
 require('dotenv').config();
 const PORT = process.env.PORT || 8080;
@@ -29,48 +29,31 @@ app.post("/jobs", upload.single('image'), async(req, res)=>{
 
     if(!acceptedMimeTypes.includes(req.file.mimetype)){
         res.status(400);
-        fs.unlink(req.file.path);
+        fs.unlink(req.file.path, (err) => { if(err) console.error(err); });
         return;
     }
 
     try{
-        let promises = [];
-        if(req.file.mimetype === "image/png"){
-            promises.push(
-                sharp(req.file.buffer).jpeg({ force: true, mozjpeg: true })
-            );
-        }
-        else{
-            promises.push(new Promise((res, rej) => { res(null); }));
-        }
-
-        let jobData = {
-            fileName: req.file.filename,
-            mimeType: req.file.mimetype,
-            //videoType: req.body.videoType
-        }
-        
-        promises.push(db.collection("jobs").add(jobData));
-        let [sharpRes, firestoreRes] = await Promise.all(promises);
-        console.log("before");
-        if(!sharpRes){
-            sharpRes = req.file.buffer;
-        }
-
+        let promises = [
+            firebaseJob(req.file),
+            convertToJpg(req.file.path, req.file.mimetype)
+        ];
+        let [firestoreRes, sharpRes] = await Promise.all(promises);
         res.send({id: firestoreRes.id});
-        await uploadFile(req.file.path, `${firestoreRes.id}.jpg`);
+        await uploadFile(sharpRes, `${firestoreRes.id}.jpg`);
+        await submitToSQS(firestoreRes.id);
+        
+        if(req.file.mimetype === "image/png"){
+            fs.unlink(sharpRes, (err) => { if(err) console.error(err); });
+        }
     }
     catch(e){
         res.status(500);
         console.error(e);
     }
     finally{
-        fs.unlink(req.file.path, () => {});
+        fs.unlink(req.file.path, (err) => { if(err) console.error(err); });
     }
-});
-
-app.get("/", (req, res) => {
-    res.send({id: "n"});
 });
 
 app.listen(PORT, () => { console.log(`PORT: ${PORT}`) });

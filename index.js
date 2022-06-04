@@ -13,6 +13,7 @@ require('dotenv').config();
 const PORT = process.env.PORT || 8080;
 
 const acceptedMimeTypes = ["image/jpeg", "image/jpg", "image/png"];
+const acceptedTrajectories = ["zoom", "dolly-zoom", "circle", "swing"];
 
 if (!fs.existsSync(process.env.UPLOAD_PATH)){
     fs.mkdirSync(process.env.UPLOAD_PATH);
@@ -24,11 +25,17 @@ app.use(cors());
 app.post("/jobs", upload.single('image'), async(req, res)=>{
 
     if(!req.file){
-        return res.status(400);
+        return res.status(400).send({message: "No Picture"});
     }
 
     if(!acceptedMimeTypes.includes(req.file.mimetype)){
-        res.status(400);
+        res.status(400).send({message: "File type not supported"});
+        fs.unlink(req.file.path, (err) => { if(err) console.error(err); });
+        return;
+    }
+
+    if(!acceptedTrajectories.includes(req.body.traj)){
+        res.status(400).send({message: "Invalid Trajectory"});
         fs.unlink(req.file.path, (err) => { if(err) console.error(err); });
         return;
     }

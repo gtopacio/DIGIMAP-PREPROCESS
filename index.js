@@ -33,15 +33,17 @@ app.post("/jobs", upload.single('image'), async(req, res)=>{
         return;
     }
 
+    let traj = req.body.traj || 'swing';
+
     try{
         let promises = [
-            firebaseJob(req.file),
+            firebaseJob(req.file, traj),
             convertToJpg(req.file.path, req.file.mimetype)
         ];
         let [firestoreRes, sharpRes] = await Promise.all(promises);
         res.send({id: firestoreRes.id});
         await uploadFile(sharpRes, `${firestoreRes.id}.jpg`);
-        await submitToSQS(firestoreRes.id);
+        await submitToSQS(firestoreRes.id, traj);
         
         if(req.file.mimetype === "image/png"){
             fs.unlink(sharpRes, (err) => { if(err) console.error(err); });

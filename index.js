@@ -13,7 +13,7 @@ require('dotenv').config();
 const PORT = process.env.PORT || 8080;
 
 const acceptedMimeTypes = ["image/jpeg", "image/jpg", "image/png"];
-const acceptedTrajectories = ["zoom", "dolly-zoom", "circle", "swing"];
+const acceptedTrajectories = ["zoom-in", "dolly-zoom-in", "circle", "swing"];
 
 if (!fs.existsSync(process.env.UPLOAD_PATH)){
     fs.mkdirSync(process.env.UPLOAD_PATH);

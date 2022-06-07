@@ -8,6 +8,8 @@ const firebaseJob = require('./utils/firebaseJob');
 const uploadFile = require('./utils/upload');
 const convertToJpg = require('./utils/convertToJpg');
 const submitToSQS = require('./utils/submitToSQS');
+const getPictureLink = require('./utils/getPictureLink');
+const addPictureLink = require('./utils/addPictureLink');
 
 require('dotenv').config();
 const PORT = process.env.PORT || 8080;
@@ -50,7 +52,14 @@ app.post("/jobs", upload.single('image'), async(req, res)=>{
         let [firestoreRes, sharpRes] = await Promise.all(promises);
         res.send({id: firestoreRes.id});
         await uploadFile(sharpRes, `${firestoreRes.id}.jpg`);
-        await submitToSQS(firestoreRes.id, traj);
+        promises = [
+            getPictureLink(firestoreRes.id),
+            submitToSQS(firestoreRes.id, traj),
+        ]
+
+        let [url] = await Promise.all(promises);
+
+        await addPictureLink(firestoreRes.id, url);
         
         if(req.file.mimetype === "image/png"){
             fs.unlink(sharpRes, (err) => { if(err) console.error(err); });

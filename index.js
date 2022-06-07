@@ -53,7 +53,7 @@ app.post("/jobs", upload.single('image'), async(req, res)=>{
         res.send({id: firestoreRes.id});
         await uploadFile(sharpRes, `${firestoreRes.id}.jpg`);
         promises = [
-            getPictureLink(firestoreRes.id),
+            getPictureLink(firestoreRes.id, 1440),
             submitToSQS(firestoreRes.id, traj),
         ]
 

@@ -3,9 +3,12 @@ const { getFirestore } = require("firebase-admin/firestore");
 const { getStorage } = require("firebase-admin/storage");
 require('dotenv').config();
 
+let privateKey = process.env.FIREBASE_PRIVATE_KEY;
+privateKey = privateKey.replace(/\\n/g, '\n');
+
 const creds = {
     "projectId": process.env.FIREBASE_PROJECT_ID,
-    "private_key": process.env.FIREBASE_PRIVATE_KEY,
+    "private_key": privateKey,
     "client_email": process.env.FIREBASE_CLIENT_EMAIL,
 };
 

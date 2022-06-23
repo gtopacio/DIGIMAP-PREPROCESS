@@ -22,3 +22,8 @@ Submits the job to the Queue
     **FIREBASE_PRIVATE_KEY** - private key of the admin service account, found in the provided JSON file for admin service accounts in Firebase
     **FIREBASE_CLIENT_EMAIL** - client email of the firebase admin service account (ex. admin@my-app.iam.gserviceaccount.com)
 4. Run **node index.js**
+
+## Notes
+
+We are thinking of utilizing serverless functions provided by Vercel due to Heroku's memory limits.
+Because of that, there is a possibility of us merging this code base with the front-end codebase.

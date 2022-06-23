@@ -11,7 +11,7 @@ Submits the job to the Queue
 
 1. Install **yarn**
 2. Run **yarn install**
-3. Create a **.env** file containing these variables:<br>
+3. Create a **.env** file containing these variables:
 <br> **PORT** - the port number the application will run, do not include if you will deploy it in Heroku
 <br> **UPLOAD_PATH** - path of the directory where uploaded files will be stored temporarily
 <br> **AWS_ACCESS_KEY_ID** - access key id of the IAM user with SQS credentials for job posting

@@ -84,7 +84,7 @@ async function main(){
     let shardRef = await db.collection("shards").doc("jobCounter");
     await db.runTransaction(async (t) => {
         const doc = await t.get(shardRef);
-        if(!doc){
+        if(!doc.exists){
             t.update(shardRef, {value: 0});
         }
     });

@@ -11,7 +11,7 @@ const submitToSQS = require('./utils/submitToSQS');
 const getPictureLink = require('./utils/getPictureLink');
 const addPictureLink = require('./utils/addPictureLink');
 
-const { db } = require('./firebase');
+const { db } = require('./utils/firebase');
 
 require('dotenv').config();
 const PORT = process.env.PORT || 8080;

@@ -85,7 +85,7 @@ async function main(){
     await db.runTransaction(async (t) => {
         const doc = await t.get(shardRef);
         if(!doc.exists){
-            t.update(shardRef, {value: 0});
+            t.set(shardRef, {value: 0});
         }
     });
     app.listen(PORT, () => { console.log(`PORT: ${PORT}`) });

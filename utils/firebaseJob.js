@@ -4,8 +4,12 @@ module.exports = async function firebaseJob({filename, mimetype}, traj='swing'){
     let jobNumber = -1;
     await db.runTransaction(async (t) => {
         const doc = await t.get(jobCounterRef);
-        jobNumber = doc.data().value + 1;
-        t.update(jobCounterRef, {value: jobNumber});
+        if(doc.exists){
+            jobNumber = doc.data().value + 1;
+            t.update(jobCounterRef, {value: jobNumber});
+            return;
+        }
+        t.set(jobCounterRef, {value: jobNumber})
     });
     let jobData = {
         status: "QUEUED",

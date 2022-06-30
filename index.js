@@ -11,6 +11,8 @@ const submitToSQS = require('./utils/submitToSQS');
 const getPictureLink = require('./utils/getPictureLink');
 const addPictureLink = require('./utils/addPictureLink');
 
+const { db } = require('./firebase');
+
 require('dotenv').config();
 const PORT = process.env.PORT || 8080;
 
@@ -78,4 +80,15 @@ app.get("/heartbeat", (req, res) => {
     res.status(200).send({ok:true});
 });
 
-app.listen(PORT, () => { console.log(`PORT: ${PORT}`) });
+async function main(){
+    let shardRef = await db.collection("shards").doc("jobCounter");
+    await db.runTransaction(async (t) => {
+        const doc = await t.get(shardRef);
+        if(!doc){
+            t.update(shardRef, {value: 0});
+        }
+    });
+    app.listen(PORT, () => { console.log(`PORT: ${PORT}`) });
+}
+
+main();

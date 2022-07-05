@@ -23,7 +23,8 @@ Submits the job to the Queue
 <br> **FIREBASE_CLIENT_EMAIL** - client email of the firebase admin service account (ex. admin@my-app.iam.gserviceaccount.com)
 4. Run **node index.js**
 
-## Notes
+## List of all repositories for this project
 
-We are thinking of utilizing serverless functions provided by Vercel due to Heroku's memory limits.
-Because of that, there is a possibility of us merging this code base with the front-end codebase.
+Front end - https://github.com/gtopacio/DIGIMAP-FRONT<br>
+Preprocessing - https://github.com/gtopacio/DIGIMAP-PREPROCESS<br>
+Renderer - https://github.com/gtopacio/DIGIMAP-JOB<br>
